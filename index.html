@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLD FINANCE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0 0 48px 0;
+      background: #070b12;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .banner {
+      background: #f3ba2f;
+      color: #090d16;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .brand {
+      font-size: 21px;
+      font-weight: 800;
+      color: #f3ba2f;
+    }
+    .card {
+      background: #101724;
+      border: 1px solid #1d283d;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .title {
+      font-size: 18px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+    }
+    .desc {
+      font-size: 13px;
+      color: #9aa7b8;
+      margin: 0 0 14px 0;
+      line-height: 1.5;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #d6dee8;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: #090e18;
+      border: 1px solid #202c44;
+      color: #ffffff;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+    .btn-gold {
+      width: 100%;
+      background: #f3ba2f;
+      color: #090d16;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-cyan {
+      width: 100%;
+      background: #22b8f0;
+      color: #061018;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-dark {
+      background: #1a2438;
+      color: #ffffff;
+      border: 1px solid #2a3a58;
+      padding: 9px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      background: #131b2b;
+      border: 1px solid #1f2b42;
+      color: #b8c4d4;
+      padding: 10px 6px;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #f3ba2f;
+      border-color: #f3ba2f;
+      color: #090d16;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat {
+      background: #090e18;
+      border: 1px solid #1d283d;
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .stat-k {
+      font-size: 12px;
+      color: #9aa7b8;
+      margin-bottom: 6px;
+    }
+    .stat-v {
+      font-size: 19px;
+      font-weight: 800;
+      color: #f3ba2f;
+    }
+    .vip-item {
+      background: #090e18;
+      border: 1px solid #1d283d;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    .vip-item.selected {
+      border-color: #f3ba2f;
+    }
+    .sub-box {
+      background: #090e18;
+      border: 1px solid #1d283d;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .msg {
+      margin-top: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+  <div id="top-banner" class="banner">CLD FINANCE — Dépôts rapides, retraits actifs 24h/24</div>
+
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">CLD FINANCE</div>
+      <div id="user-badge" style="font-size:12px; color:#9aa7b8;">Invité</div>
+    </div>
+
+    <!-- ÉCRAN CONNEXION / INSCRIPTION -->
+    <div id="auth-box" class="card">
+      <h2 class="title">Connexion ou Inscription Membre</h2>
+      <p class="desc">Accédez à vos packs VIP 1–5, vos tâches quotidiennes, vos retraits BNB et le support.</p>
+
+      <label for="auth-name">Nom complet</label>
+      <input type="text" id="auth-name" placeholder="Ex: Jean Dupont" />
+
+      <label for="auth-email">Adresse e-mail</label>
+      <input type="email" id="auth-email" placeholder="exemple@email.com" />
+
+      <label for="auth-pass">Mot de passe</label>
+      <input type="password" id="auth-pass" placeholder="Minimum 4 caractères" />
+
+      <label for="auth-ref">Code parrain (optionnel)</label>
+      <input type="text" id="auth-ref" placeholder="Code du parrain" />
+
+      <button class="btn-gold" onclick="loginOrRegister()">Continuer</button>
+      <div id="auth-msg" class="msg"></div>
+    </div>
+
+    <!-- ESPACE MEMBRE CONNECTÉ -->
+    <div id="app-box" class="hidden">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div>
+            <strong id="u-name">Membre</strong><br />
+            <span style="font-size:12px; color:#9aa7b8;">ID : <code id="u-uid"></code></span>
+          </div>
+          <button class="btn-dark" onclick="logoutUser()">Déconnexion</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-k">Solde disponible</div>
+            <div id="u-balance" class="stat-v">0.00 USDT</div>
+          </div>
+          <div class="stat">
+            <div class="stat-k">Statut VIP</div>
+            <div id="u-vip" class="stat-v">Aucun VIP</div>
+          </div>
+        </div>
+
+        <div class="sub-box">
+          <div style="font-size:12px; color:#9aa7b8; margin-bottom:4px;">TXID confirmé sur votre compte :</div>
+          <div id="u-confirm-txid" style="font-size:13px; color:#10d990; font-weight:700; word-break:break-all;">Aucun TXID confirmé pour le moment</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button id="ctab-deposit" class="tab-btn active" onclick="switchClientTab('deposit')">Dépôt VIP</button>
+        <button id="ctab-tasks" class="tab-btn" onclick="switchClientTab('tasks')">Tâches</button>
+        <button id="ctab-withdraw" class="tab-btn" onclick="switchClientTab('withdraw')">Retrait</button>
+        <button id="ctab-support" class="tab-btn" onclick="switchClientTab('support')">Support</button>
+      </div>
+
+      <!-- ONGLET DÉPÔT VIP -->
+      <div id="cview-deposit" class="card">
+        <h3 class="title">Choisir un Pack VIP (1–5) &amp; Soumettre un Dépôt</h3>
+        <p class="desc">Envoyez le montant sur l'adresse BNB Smart Chain (BEP20) ci-dessous puis collez votre TXID.</p>
+
+        <div class="sub-box">
+          <div style="font-size:12px; color:#9aa7b8;">Adresse de réception BEP20 (BNB Smart Chain) :</div>
+          <div id="platform-bnb-box" style="font-size:12px; color:#f3ba2f; font-weight:700; word-break:break-all; margin-top:4px;">0xfb8d8832df16fea52f0ddac2d14aa86c7489017c</div>
+        </div>
+
+        <div id="vip-list-client"></div>
+
+        <label for="dep-amount">Montant déposé (minimum dès 5)</label>
+        <input type="number" id="dep-amount" min="5" step="any" value="5" />
+
+        <label for="dep-client-txid">Votre TXID de transfert</label>
+        <input type="text" id="dep-client-txid" placeholder="Collez votre TXID..." />
+
+        <button class="btn-gold" onclick="submitClientDeposit()">Envoyer la demande de dépôt</button>
+        <div id="dep-msg" class="msg"></div>
+      </div>
+
+      <!-- ONGLET TÂCHES QUOTIDIENNES -->
+      <div id="cview-tasks" class="card hidden">
+        <h3 class="title">Tâches Quotidiennes (2 tâches / jour)</h3>
+        <p class="desc" id="tasks-status-text">Progression : 0 / 2 tâches complétées aujourd'hui.</p>
+        <button class="btn-cyan" onclick="completeClientTask()">Valider une tâche quotidienne</button>
+        <div id="task-msg" class="msg"></div>
+      </div>
+
+      <!-- ONGLET RETRAIT BNB -->
+      <div id="cview-withdraw" class="card hidden">
+        <h3 class="title">Retrait BNB (BEP20)</h3>
+        <p class="desc">Renseignez votre adresse BNB Smart Chain (0x...) et le montant à retirer.</p>
+
+        <label for="wd-bnb">Votre adresse BNB (BEP20)</label>
+        <input type="text" id="wd-bnb" placeholder="0x..." />
+
+        <label for="wd-amount">Montant à retirer</label>
+        <input type="number" id="wd-amount" min="1" step="any" placeholder="Ex: 5" />
+
+        <button class="btn-gold" onclick="submitClientWithdrawal()">Demander le retrait</button>
+        <div id="wd-msg" class="msg"></div>
+      </div>
+
+      <!-- ONGLET SUPPORT & DEMANDES -->
+      <div id="cview-support" class="card hidden">
+        <h3 class="title">Envoyer une demande au Directeur</h3>
+        <p class="desc">Posez une question ou signalez un problème (dépôt, TXID, mot de passe, retrait, BNB). E-mail direct : <span id="support-email-text">cldfinance79@gmail.com</span></p>
+
+        <label for="ticket-subject">Sujet</label>
+        <input type="text" id="ticket-subject" placeholder="Ex: Validation dépôt / Mot de passe / BNB" />
+
+        <label for="ticket-message">Votre message</label>
+        <textarea id="ticket-message" placeholder="Décrivez votre demande..."></textarea>
+
+        <button class="btn-cyan" onclick="sendClientTicket()">Envoyer la demande</button>
+        <div id="ticket-msg" class="msg"></div>
+
+        <h4 style="margin:16px 0 8px 0; font-size:15px;">Historique &amp; Réponses du Directeur</h4>
+        <div id="client-tickets-history">Aucune demande envoyée.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDVe1z4fWlMoQojfsnoMFOFhytkGefZuLo",
+      authDomain: "cld-finance-3a89f.firebaseapp.com",
+      databaseURL: "https://cld-finance-3a89f-default-rtdb.firebaseio.com",
+      projectId: "cld-finance-3a89f",
+      storageBucket: "cld-finance-3a89f.firebasestorage.app",
+      messagingSenderId: "830225739365",
+      appId: "1:830225739365:web:607cffe7316de83053e08c",
+      measurementId: "G-09H9GJWKXV"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    }
+    const db = firebase.database();
+
+    let currentUid = localStorage.getItem("cld_finance_uid") || null;
+    let currentUserData = null;
+    let selectedVip = "VIP 1";
+    let platformSettings = {
+      bannerText: "CLD FINANCE — Dépôts rapides, retraits actifs 24h/24",
+      platformBnbAddress: "0xfb8d8832df16fea52f0ddac2d14aa86c7489017c",
+      referralPercent: 10,
+      depositBonusPercent: 25,
+      supportEmail: "cldfinance79@gmail.com",
+      currency: "USDT",
+      vipPlans: {
+        "VIP 1": { minDeposit: 5, dailyGain: 0.75 },
+        "VIP 2": { minDeposit: 15, dailyGain: 2.25 },
+        "VIP 3": { minDeposit: 50, dailyGain: 8.00 },
+        "VIP 4": { minDeposit: 150, dailyGain: 25.00 },
+        "VIP 5": { minDeposit: 300, dailyGain: 55.00 }
+      }
+    };
+
+    function switchClientTab(tab) {
+      const views = {
+        deposit: "cview-deposit",
+        tasks: "cview-tasks",
+        withdraw: "cview-withdraw",
+        support: "cview-support"
+      };
+      Object.keys(views).forEach((k) => {
+        document.getElementById(views[k]).classList.toggle("hidden", k !== tab);
+        document.getElementById("ctab-" + k).classList.toggle("active", k === tab);
+      });
+    }
+
+    function selectVipPack(vipName, minDep) {
+      selectedVip = vipName;
+      document.getElementById("dep-amount").value = Math.max(5, Number(minDep || 5));
+      renderVipPacksClient();
+    }
+
+    function renderVipPacksClient() {
+      const box = document.getElementById("vip-list-client");
+      const curr = platformSettings.currency || "USDT";
+      const plans = platformSettings.vipPlans || {};
+      const names = ["VIP 1", "VIP 2", "VIP 3", "VIP 4", "VIP 5"];
+
+      box.innerHTML = names.map((v) => {
+        const p = plans[v] || { minDeposit: 5, dailyGain: 1 };
+        const active = selectedVip === v ? "selected" : "";
+        return `
+          <div class="vip-item ${active}" onclick="selectVipPack('${v}', ${Number(p.minDeposit || 5)})">
+            <div>
+              <strong style="color:#f3ba2f;">${v}</strong><br />
+              <span style="font-size:12px; color:#9aa7b8;">Gain / jour : +${Number(p.dailyGain || 0).toFixed(2)} ${curr}</span>
+            </div>
+            <div style="font-weight:800; font-size:13px;">Dès ${Number(p.minDeposit || 5).toFixed(2)} ${curr}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderUserInterface() {
+      const curr = platformSettings.currency || "USDT";
+      document.getElementById("top-banner").textContent = platformSettings.bannerText || "CLD FINANCE";
+      document.getElementById("platform-bnb-box").textContent = platformSettings.platformBnbAddress || "";
+      document.getElementById("support-email-text").textContent = platformSettings.supportEmail || "cldfinance79@gmail.com";
+
+      if (!currentUid || !currentUserData) {
+        document.getElementById("auth-box").classList.remove("hidden");
+        document.getElementById("app-box").classList.add("hidden");
+        document.getElementById("user-badge").textContent = "Invité";
+        return;
+      }
+
+      document.getElementById("auth-box").classList.add("hidden");
+      document.getElementById("app-box").classList.remove("hidden");
+      document.getElementById("user-badge").textContent = currentUserData.name || "Membre";
+
+      document.getElementById("u-name").textContent = currentUserData.name || "Membre";
+      document.getElementById("u-uid").textContent = currentUid;
+      document.getElementById("u-balance").textContent = `${Number(currentUserData.balance || 0).toFixed(2)} ${curr}`;
+      document.getElementById("u-vip").textContent = currentUserData.vip || "Aucun VIP";
+
+      const txidEl = document.getElementById("u-confirm-txid");
+      if (currentUserData.depositConfirmed && currentUserData.confirmTxid) {
+        txidEl.textContent = currentUserData.confirmTxid;
+        txidEl.style.color = "#10d990";
+      } else {
+        txidEl.textContent = "Aucun TXID confirmé pour le moment";
+        txidEl.style.color = "#9aa7b8";
+      }
+
+      const tasksDone = Number(currentUserData.tasksDone || 0);
+      document.getElementById("tasks-status-text").textContent = `Progression : ${tasksDone} / 2 tâches complétées aujourd'hui.`;
+
+      const bnbInput = document.getElementById("wd-bnb");
+      if (bnbInput && !bnbInput.value && currentUserData.defaultBnb) {
+        bnbInput.value = currentUserData.defaultBnb;
+      }
+    }
+
+    function loginOrRegister() {
+      const name = document.getElementById("auth-name").value.trim();
+      const email = document.getElementById("auth-email").value.trim().toLowerCase();
+      const pass = document.getElementById("auth-pass").value.trim();
+      const ref = document.getElementById("auth-ref").value.trim();
+      const msg = document.getElementById("auth-msg");
+
+      if (!email || !email.includes("@") || pass.length < 4) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Entrez un e-mail valide et un mot de passe (min. 4 caractères).";
+        return;
+      }
+
+      const safeId = "user_" + email.replace(/[^a-z0-9]/g, "_");
+      const uRef = db.ref("users/" + safeId);
+
+      uRef.get().then((snap) => {
+        if (snap.exists()) {
+          const existing = snap.val();
+          if (existing.password && existing.password !== pass) {
+            msg.style.color = "#ff6b6b";
+            msg.textContent = "Mot de passe incorrect.";
+            return;
+          }
+          if (name && name !== existing.name) {
+            uRef.update({ name });
+          }
+        } else {
+          uRef.set({
+            name: name || email.split("@")[0],
+            email,
+            password: pass,
+            referredBy: ref || "",
+            balance: 0,
+            vip: "",
+            tasksDone: 0,
+            depositConfirmed: false,
+            confirmTxid: "",
+            defaultBnb: "",
+            createdAt: Date.now()
+          });
+        }
+        currentUid = safeId;
+        localStorage.setItem("cld_finance_uid", safeId);
+        listenToCurrentUser();
+      });
+    }
+
+    function logoutUser() {
+      currentUid = null;
+      currentUserData = null;
+      localStorage.removeItem("cld_finance_uid");
+      renderUserInterface();
+    }
+
+    function submitClientDeposit() {
+      const msg = document.getElementById("dep-msg");
+      if (!currentUid || !currentUserData) return;
+
+      const amt = parseFloat(document.getElementById("dep-amount").value) || 0;
+      const txid = document.getElementById("dep-client-txid").value.trim();
+
+      if (amt < 5) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Le dépôt minimum est de 5.";
+        return;
+      }
+      if (!txid || txid.length < 4) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Veuillez coller votre TXID.";
+        return;
+      }
+
+      const bonusPct = Number(platformSettings.depositBonusPercent || 0);
+      const refPct = Number(platformSettings.referralPercent || 0);
+      const totalWithBonus = Number((amt + (amt * bonusPct) / 100).toFixed(2));
+      const refEstimate = Number(((amt * refPct) / 100).toFixed(2));
+
+      db.ref("deposits").push({
+        uid: currentUid,
+        memberName: currentUserData.name || "",
+        memberEmail: currentUserData.email || "",
+        vipRequested: selectedVip,
+        amount: amt,
+        totalWithBonus,
+        referredBy: currentUserData.referredBy || "",
+        referralCommissionEstimate: refEstimate,
+        clientTxid: txid,
+        status: "pending",
+        createdAt: Date.now()
+      }).then(() => {
+        document.getElementById("dep-client-txid").value = "";
+        msg.style.color = "#10d990";
+        msg.textContent = "Demande de dépôt envoyée au Directeur.";
+      });
+    }
+
+    function completeClientTask() {
+      const msg = document.getElementById("task-msg");
+      if (!currentUid || !currentUserData) return;
+
+      if (!currentUserData.vip) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Activez d'abord un pack VIP pour effectuer les tâches.";
+        return;
+      }
+
+      const done = Number(currentUserData.tasksDone || 0);
+      if (done >= 2) {
+        msg.style.color = "#f3ba2f";
+        msg.textContent = "Vous avez déjà complété vos 2 tâches du jour.";
+        return;
+      }
+
+      const plan = (platformSettings.vipPlans || {})[currentUserData.vip] || { dailyGain: 0 };
+      const gainPerTask = Number(((Number(plan.dailyGain || 0)) / 2).toFixed(2));
+      const nextBal = Number(((Number(currentUserData.balance || 0)) + gainPerTask).toFixed(2));
+
+      db.ref("users/" + currentUid).update({
+        tasksDone: done + 1,
+        balance: nextBal
+      }).then(() => {
+        msg.style.color = "#10d990";
+        msg.textContent = `Tâche validée (+${gainPerTask.toFixed(2)} ${platformSettings.currency || "USDT"}).`;
+      });
+    }
+
+    function submitClientWithdrawal() {
+      const msg = document.getElementById("wd-msg");
+      if (!currentUid || !currentUserData) return;
+
+      const bnb = document.getElementById("wd-bnb").value.trim();
+      const amt = parseFloat(document.getElementById("wd-amount").value) || 0;
+      const bal = Number(currentUserData.balance || 0);
+
+      if (!bnb.startsWith("0x") || bnb.length < 20) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Entrez une adresse BNB BEP20 valide (0x...).";
+        return;
+      }
+      if (amt <= 0 || amt > bal) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Montant invalide ou supérieur à votre solde.";
+        return;
+      }
+
+      db.ref("users/" + currentUid).update({ defaultBnb: bnb });
+      db.ref("withdrawals").push({
+        uid: currentUid,
+        memberName: currentUserData.name || "",
+        memberEmail: currentUserData.email || "",
+        network: "BNB_BEP20",
+        bnbAddress: bnb,
+        amount: amt,
+        status: "pending",
+        createdAt: Date.now()
+      }).then(() => {
+        document.getElementById("wd-amount").value = "";
+        msg.style.color = "#10d990";
+        msg.textContent = "Demande de retrait envoyée.";
+      });
+    }
+
+    function sendClientTicket() {
+      const msg = document.getElementById("ticket-msg");
+      if (!currentUid || !currentUserData) return;
+
+      const subject = document.getElementById("ticket-subject").value.trim();
+      const message = document.getElementById("ticket-message").value.trim();
+
+      if (!message) {
+        msg.style.color = "#ff6b6b";
+        msg.textContent = "Écrivez votre message avant d'envoyer.";
+        return;
+      }
+
+      db.ref("support_tickets").push({
+        uid: currentUid,
+        memberName: currentUserData.name || "",
+        memberEmail: currentUserData.email || "",
+        subject: subject || "Demande client",
+        message,
+        directorReply: "",
+        status: "open",
+        createdAt: Date.now()
+      }).then(() => {
+        document.getElementById("ticket-subject").value = "";
+        document.getElementById("ticket-message").value = "";
+        msg.style.color = "#10d990";
+        msg.textContent = "Demande envoyée au Directeur.";
+      });
+    }
+
+    function listenToCurrentUser() {
+      if (!currentUid) return;
+
+      db.ref("users/" + currentUid).on("value", (snap) => {
+        currentUserData = snap.exists() ? snap.val() : null;
+        renderUserInterface();
+      });
+
+      db.ref("support_tickets").orderByChild("uid").equalTo(currentUid).on("value", (snap) => {
+        const box = document.getElementById("client-tickets-history");
+        const val = snap.exists() ? snap.val() : {};
+        const items = Object.values(val).reverse();
+
+        if (!items.length) {
+          box.innerHTML = `<p class="desc">Aucune demande envoyée.</p>`;
+          return;
+        }
+
+        box.innerHTML = items.map((t) => `
+          <div class="sub-box">
+            <div style="font-size:12px; color:#f3ba2f; font-weight:700;">${t.subject || "Demande"}</div>
+            <div style="font-size:13px; margin:4px 0 8px 0;">${t.message || ""}</div>
+            ${t.directorReply
+              ? `<div style="font-size:12px; color:#10d990; border-top:1px solid #1d283d; padding-top:6px;"><strong>Réponse du Directeur :</strong> ${t.directorReply}</div>`
+              : `<div style="font-size:12px; color:#9aa7b8;">En attente de réponse...</div>`
+            }
+          </div>
+        `).join("");
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      db.ref("settings/platform").on("value", (snap) => {
+        if (snap.exists()) {
+          platformSettings = {
+            ...platformSettings,
+            ...snap.val(),
+            vipPlans: snap.val().vipPlans || platformSettings.vipPlans
+          };
+          renderVipPacksClient();
+          renderUserInterface();
+        }
+      });
+
+      renderVipPacksClient();
+      renderUserInterface();
+      if (currentUid) {
+        listenToCurrentUser();
+      }
+    });
+  </script>
+</body>
+</html>
